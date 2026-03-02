@@ -6,12 +6,21 @@
 import type { Application } from 'express';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import { corsConfig } from '~/config/cors.config';
+import { envConfig } from '~/config/env.config';
 
 export const createApp = (): Application => {
     const app = express();
 
+    app.use(helmet());
+    app.use(corsConfig());
+    app.use(cookieParser());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(morgan(envConfig.nodeEnv === 'development' ? 'dev' : 'combined'));
 
     app.get('/health', (_req, res) => {
         res.status(StatusCodes.OK).json({
