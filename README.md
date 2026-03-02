@@ -1,7 +1,111 @@
 # Trello API with NodeJs - Express.js - TypeScript
 
 - [Trello API with NodeJs - Express.js - TypeScript](#trello-api-with-nodejs---expressjs---typescript)
+  - [🛠️ Tech Stack](#️-tech-stack)
+  - [🏗️ Project Structure](#️-project-structure)
+  - [🔌 API Endpoints](#-api-endpoints)
+  - [🚀 Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Running the App](#running-the-app)
+    - [Development](#development)
   - [🏷️ About Me](#️-about-me)
+
+## 🛠️ Tech Stack
+
+- **TypeScript** - Type safety
+- **Express.js** - Web framework
+- **Zod** - Schema validation
+- **Helmet** - Security headers
+- **CORS** - Cross-origin resource sharing
+- **Morgan** - Request logging
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **Husky** - Git hooks
+- **lint-staged** - Staged file validation
+- **Commitlint** - Commit message standards
+
+## 🏗️ Project Structure
+
+```md
+.
+├── src/
+│ ├── config/ # App configuration
+│ ├── app.ts
+│ └── server.ts
+├── .editorconfig
+├── .env.example
+├── .gitignore
+├── .prettierignore
+├── commitlint.config.mjs
+├── eslint.config.mjs
+├── lint-staged.config.mjs
+├── prettier.config.mjs
+├── package.json
+├── README.md
+├── tsconfig.base.json
+├── tsconfig.build.json
+└── tsconfig.json
+```
+
+## 🔌 API Endpoints
+
+- Health check: `GET /health`
+
+## 🚀 Getting Started
+
+## Prerequisites
+
+- Create `.env` file based on `.env.example` and modify variables with your value
+
+  ```bash
+  NODE_ENV=development
+
+  # ==== Application
+  APP_HOST="localhost"
+  APP_PORT=3000
+  APP_PREFIX='api'
+  APP_CORS_ORIGIN='http:localhost:3000,https://frontend.example.com'
+  ```
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Setup git hooks
+npm run prepare
+```
+
+### Running the App
+
+```bash
+# Development mode with hot reload
+npm run dev
+
+# Build for production
+npm run build
+
+# Run production build
+npm start
+```
+
+### Development
+
+```bash
+# Linting
+npm run lint          # Check for issues
+npm run lint:fix      # Auto-fix issues
+
+# Formatting
+npm run format        # Format all files
+npm run format:check  # Check formatting
+
+# Linting and formatting all
+npm run check:all     # Check type, lint, and format
+npm run fix:all       # Auto-fix issues and formatting
+```
 
 ## 🏷️ About Me
 
