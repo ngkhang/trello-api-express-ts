@@ -1,0 +1,24 @@
+echo "🔍 Running pre-push checks..."
+
+# Type check
+echo "📘 Type checking..."
+npm run type:check || {
+  echo "❌ Type check failed"
+  exit 1
+}
+
+# Lint
+echo "🔧 Linting..."
+npm run lint || {
+  echo "❌ Lint failed"
+  exit 1
+}
+
+# Format check
+echo "📝 Checking formatting..."
+npm run format:check || {
+  echo "❌ Format check failed. Run 'npm run format' to fix"
+  exit 1
+}
+
+echo "✅ All pre-push checks passed!"
