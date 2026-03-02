@@ -12,6 +12,8 @@ import morgan from 'morgan';
 
 import { corsConfig } from '~/config/cors.config';
 import { envConfig } from '~/config/env.config';
+import { errorEndpoint, errorHandler } from '~/middleware/error-handler.middleware';
+import { metadataMiddleware } from '~/middleware/metadata.middleware';
 
 export const createApp = (): Application => {
   const app = express();
@@ -22,6 +24,7 @@ export const createApp = (): Application => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan(envConfig.nodeEnv === 'development' ? 'dev' : 'combined'));
+  app.use(metadataMiddleware);
 
   app.get('/health', (_req, res) => {
     res.status(StatusCodes.OK).json({
@@ -31,6 +34,11 @@ export const createApp = (): Application => {
       timestamp: new Date().toISOString(),
     });
   });
+
+  // Catch not found endpoint handler
+  app.use('/{*splat}', errorEndpoint);
+  // Global error handler
+  app.use(errorHandler);
 
   return app;
 };

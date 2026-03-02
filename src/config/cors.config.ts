@@ -7,6 +7,7 @@ import cors, { type CorsOptions } from 'cors';
 import { StatusCodes } from 'http-status-codes';
 
 import { envConfig } from '~/config/env.config';
+import { ForbiddenError } from '~/core/responses/api-error.response';
 
 export const corsConfig = () => {
   const corsOptions: CorsOptions = {
@@ -23,15 +24,15 @@ export const corsConfig = () => {
       if (!requestOrigin) {
         if (envConfig.nodeEnv !== 'production') return callback(null, true);
 
-        // TODO: Standardize Error response
-        return callback(new Error('Origin is required'));
+        return callback(new ForbiddenError('Origin is required'));
       }
 
       const allowedOrigins = envConfig.app.corsOrigin.includes(requestOrigin);
       if (allowedOrigins) return callback(null, true);
 
-      // TODO: Standardize Error response
-      return callback(new Error(`Origin "${requestOrigin}" is not allowed by CORS policy`));
+      return callback(
+        new ForbiddenError(`Origin "${requestOrigin}" is not allowed by CORS policy`),
+      );
     },
   };
 
