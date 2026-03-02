@@ -10,22 +10,22 @@ const { host, port, prefix } = envConfig.app;
 const URL = `http://${host}:${port}/${prefix}`;
 
 async function bootstrap(): Promise<void> {
-    const app = createApp();
+  const app = createApp();
 
-    const server = app.listen(port, () => {
-        console.info(`🚀 Server running in "${envConfig.nodeEnv}" mode on port ${port}`);
-        console.info(`📡 API available at ${URL}`);
-    });
+  const server = app.listen(port, () => {
+    console.info(`🚀 Server running in "${envConfig.nodeEnv}" mode on port ${port}`);
+    console.info(`📡 API available at ${URL}`);
+  });
 
-    process.on('SIGINT', () => {
-        console.info(`SIGINT — shutting down gracefully…`);
-        server.close(async () => {
-            process.exit(0);
-        });
+  process.on('SIGINT', () => {
+    console.info(`SIGINT — shutting down gracefully…`);
+    server.close(async () => {
+      process.exit(0);
     });
+  });
 }
 
 bootstrap().catch((err) => {
-    console.error('Failed to start: ', err);
-    process.exit(1);
-})
+  console.error('Failed to start: ', err);
+  process.exit(1);
+});
