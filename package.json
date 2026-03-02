@@ -1,0 +1,22 @@
+{
+  "name": "trello-api-express-ts",
+  "version": "1.0.0",
+  "description": "Trello API with Express.js, TypeScript ",
+  "license": "ISC",
+  "author": "Khang Nguyen",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "homepage": "https://github.com/ngkhang/trello-api-express-ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngkhang/trello-api-express-ts.git"
+  },
+  "keywords": [
+    "node.js",
+    "express.js",
+    "typescript"
+  ]
+}
