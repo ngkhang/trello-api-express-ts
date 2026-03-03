@@ -1,17 +1,17 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-02
+ * Last Updated: 2026-03-03
  ------------------------------------------------- */
 
 import cookieParser from 'cookie-parser';
 import type { Application } from 'express';
 import express from 'express';
 import helmet from 'helmet';
-import { StatusCodes } from 'http-status-codes';
 import morgan from 'morgan';
 
 import { corsConfig } from '~/config/cors.config';
 import { envConfig } from '~/config/env.config';
+import { OkResponse } from '~/core/responses/api-success.response';
 import { errorEndpoint, errorHandler } from '~/middleware/error-handler.middleware';
 import { metadataMiddleware } from '~/middleware/metadata.middleware';
 
@@ -27,12 +27,8 @@ export const createApp = (): Application => {
   app.use(metadataMiddleware);
 
   app.get('/health', (_req, res) => {
-    res.status(StatusCodes.OK).json({
-      status: 'success',
-      statusCode: StatusCodes.OK,
-      message: 'ok',
-      timestamp: new Date().toISOString(),
-    });
+    const resBody = new OkResponse({ message: 'New res', data: null });
+    res.status(resBody.statusCode).json(resBody);
   });
 
   // Catch not found endpoint handler
