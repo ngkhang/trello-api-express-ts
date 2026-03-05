@@ -1,1 +1,1 @@
-npx lint-staged --config lint-staged.config.mjs
+npx lint-staged --no-stash --config lint-staged.config.mjs
