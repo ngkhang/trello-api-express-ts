@@ -7,6 +7,8 @@ import { ReasonPhrases, StatusCodes } from 'http-status-codes';
 
 import type { SuccessResponse } from '~/types/response.type';
 
+type SubBody<T> = Pick<SuccessResponse<T>, 'data'> & { message?: SuccessResponse<T>['message'] };
+
 export class ApiSuccessResponse<T> implements SuccessResponse<T> {
   public readonly status = 'success';
   public readonly statusCode: StatusCodes;
@@ -33,7 +35,7 @@ export class ApiSuccessResponse<T> implements SuccessResponse<T> {
  * Ok Response (200)
  */
 export class OkResponse<T> extends ApiSuccessResponse<T> {
-  constructor({ data, message = ReasonPhrases.OK }: Pick<SuccessResponse<T>, 'data' | 'message'>) {
+  constructor({ data, message = ReasonPhrases.OK }: SubBody<T>) {
     super({ message, data, statusCode: StatusCodes.OK });
   }
 }
@@ -42,10 +44,7 @@ export class OkResponse<T> extends ApiSuccessResponse<T> {
  * Created Response (201)
  */
 export class CreatedResponse<T> extends ApiSuccessResponse<T> {
-  constructor({
-    data,
-    message = ReasonPhrases.CREATED,
-  }: Pick<SuccessResponse<T>, 'data' | 'message'>) {
+  constructor({ data, message = ReasonPhrases.CREATED }: SubBody<T>) {
     super({ message, data, statusCode: StatusCodes.CREATED });
   }
 }
