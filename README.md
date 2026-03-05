@@ -4,6 +4,9 @@
   - [🛠️ Tech Stack](#️-tech-stack)
   - [🏗️ Project Structure](#️-project-structure)
   - [🔌 API Endpoints](#-api-endpoints)
+  - [📡 API Guideline](#-api-guideline)
+    - [The Response Format](#the-response-format)
+    - [Usage](#usage)
   - [🚀 Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
     - [Installation](#installation)
@@ -31,6 +34,10 @@
 .
 ├── src/
 │ ├── config/ # App configuration
+│ ├── core/ # Shared core configuration
+│ ├── middlewares/ # Express middlewares
+│ ├── types/ # TypeScript type definitions
+│ ├── utils/ # Shared constant, functions
 │ ├── app.ts
 │ └── server.ts
 ├── .editorconfig
@@ -51,6 +58,77 @@
 ## 🔌 API Endpoints
 
 - Health check: `GET /health`
+
+## 📡 API Guideline
+
+### The Response Format
+
+- Success
+
+  ```json
+  {
+    "success": "success",
+    "statusCode": 200,
+    "message": "Success message",
+    "data": {},
+    "metaData": {
+      "requestTime": "2026-02-19T10:30:00.000Z",
+      "endpoint": "/api/examples"
+    }
+  }
+  ```
+
+- Error
+
+  > - `error` is optional and only present when there are field-level or domain-level error details.
+  > - The `error`, `stack`, and `name` properties show if `process.env.NODE_ENV` is not `"production"`
+
+  ```json
+  {
+    "success": "error",
+    "statusCode": 404,
+    "message": "Error message",
+    "error": {
+      "code": "ERR_INVALID",
+      "details": [
+        {
+          "key": "fieldName",
+          "message": "Validation error detail"
+        }
+      ]
+    },
+    "stack": "",
+    "name": "",
+    "metaData": {
+      "requestTime": "2026-02-19T10:30:00.000Z",
+      "endpoint": "/api/examples"
+    }
+  }
+  ```
+
+### Usage
+
+- Controller — HTTP in/out only, calls service, sends response:
+
+  ```typescript
+  const resBody = new OkResponse({ data });
+  const resBody = new OkResponse({ message: 'Custom message', data });
+  ```
+
+- Service — throws domain errors for the global error handler to catch:
+
+  ```typescript
+  throw new NotFoundError(`User not found: ${id}`);
+  throw new BadRequestError('Invalid input', {
+    code: ERROR_CODE.INVALID,
+    details: [
+      {
+        key: 'email',
+        message: 'Must be require',
+      },
+    ],
+  });
+  ```
 
 ## 🚀 Getting Started
 
