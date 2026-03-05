@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-02
+ * Last Updated: 2026-03-05
  ------------------------------------------------- */
 
 import type { Request, Response, NextFunction } from 'express';
@@ -10,6 +10,7 @@ import {
   InternalServerError,
   NotFoundError,
 } from '~/core/responses/api-error.response';
+import { ERROR_CODE } from '~/utils/constants';
 
 const getErrorMessage = (error: unknown): string => {
   if (error && typeof error === 'object' && 'message' in error) return String(error.message);
@@ -31,11 +32,21 @@ export const errorHandler = (
   }
 
   const errorMessage = getErrorMessage(error);
-  const fallback = new InternalServerError(errorMessage);
+  const fallback = new InternalServerError(errorMessage, { code: ERROR_CODE.OTHER_CODE });
 
   res.status(fallback.statusCode).json(fallback);
 };
 
 export const errorEndpoint = (req: Request, _res: Response, next: NextFunction): void => {
-  next(new NotFoundError(`Not found endpoint: ${req.originalUrl} with "${req.method}" method`));
+  next(
+    new NotFoundError(`Not found URL`, {
+      code: ERROR_CODE.NOT_FOUND,
+      details: [
+        {
+          key: 'endpoint',
+          message: `'${req.originalUrl}' is not exist`,
+        },
+      ],
+    }),
+  );
 };
