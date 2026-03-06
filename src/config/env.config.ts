@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-02
+ * Last Updated: 2026-03-06
  ------------------------------------------------- */
 
 import dotEnv from 'dotenv';
@@ -32,6 +32,7 @@ const EnvSchema = z.object({
       .map((origin) => origin.trim())
       .filter(Boolean),
   ),
+  DB_MONGO_URI: z.string('Must is required'),
 });
 
 const { success, data: validated, error } = EnvSchema.safeParse(process.env);
@@ -52,5 +53,8 @@ export const envConfig = {
     port: validated.APP_PORT,
     prefix: validated.APP_PREFIX,
     corsOrigin: validated.APP_CORS_ORIGIN,
+  },
+  db: {
+    uri: validated.DB_MONGO_URI,
   },
 };

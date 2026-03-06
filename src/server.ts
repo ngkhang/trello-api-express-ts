@@ -1,15 +1,18 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-02
+ * Last Updated: 2026-03-06
  ------------------------------------------------- */
 
 import { createApp } from '~/app';
+import { connectDb } from '~/config/db.config';
 import { envConfig } from '~/config/env.config';
 
 const { host, port, prefix } = envConfig.app;
 const URL = `http://${host}:${port}/${prefix}`;
 
 async function bootstrap(): Promise<void> {
+  await connectDb();
+
   const app = createApp();
 
   const server = app.listen(port, () => {
