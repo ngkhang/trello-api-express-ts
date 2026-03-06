@@ -5,17 +5,32 @@
 
 import dns from 'dns/promises';
 
-import type { Db } from 'mongodb';
+import type { Collection, Db } from 'mongodb';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
 import { envConfig } from '~/config/env.config';
+import type { BoardDocument } from '~/modules/boards/board.document';
+import type { CardDocument } from '~/modules/cards/card.document';
+import type { ColumnDocument } from '~/modules/columns/column.document';
 
 // Fix error: Error: querySrv ECONNREFUSED
 dns.setServers(['1.1.1.1']);
 
-export const COLLECTION_NAMES = {} as const;
+export const COLLECTION_NAMES = {
+  BOARDS: 'boards',
+  CARDS: 'cards',
+  COLUMNS: 'columns',
+} as const;
 
-type CollectionMap = unknown;
+interface CollectionTypeMap {
+  [COLLECTION_NAMES.BOARDS]: BoardDocument;
+  [COLLECTION_NAMES.CARDS]: CardDocument;
+  [COLLECTION_NAMES.COLUMNS]: ColumnDocument;
+}
+
+type CollectionMap = {
+  [K in keyof CollectionTypeMap]: () => Collection<CollectionTypeMap[K]>;
+};
 
 class Database {
   private static instance: Database | null = null;
@@ -70,6 +85,10 @@ export const database = Database.getInstance();
 const connectDb = async (): Promise<Db> => await database.connect();
 const closeDb = async (): Promise<void> => await database.close();
 const getDb = (): Db => database.getDb();
-const collections: CollectionMap = {};
+const collections: CollectionMap = {
+  boards: () => database.getDb().collection(COLLECTION_NAMES.BOARDS),
+  cards: () => database.getDb().collection(COLLECTION_NAMES.CARDS),
+  columns: () => database.getDb().collection(COLLECTION_NAMES.COLUMNS),
+};
 
 export { connectDb, closeDb, getDb, collections };
