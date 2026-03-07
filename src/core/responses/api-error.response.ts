@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-05
+ * Last Updated: 2026-03-07
  ------------------------------------------------- */
 
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
@@ -57,7 +57,7 @@ export class InternalServerError extends ApiErrorResponse {
  * Bad Request Error (400)
  */
 export class BadRequestError extends ApiErrorResponse {
-  constructor(message = ReasonPhrases.BAD_REQUEST, error?: ErrorDetail) {
+  constructor(message: ErrorResponse['message'] = ReasonPhrases.BAD_REQUEST, error?: ErrorDetail) {
     super({ message, statusCode: StatusCodes.BAD_REQUEST, error });
   }
 }
@@ -66,7 +66,7 @@ export class BadRequestError extends ApiErrorResponse {
  * UnAuthorized (401)
  */
 export class UnauthorizedError extends ApiErrorResponse {
-  constructor(message = ReasonPhrases.UNAUTHORIZED, error?: ErrorDetail) {
+  constructor(message: ErrorResponse['message'] = ReasonPhrases.UNAUTHORIZED, error?: ErrorDetail) {
     super({ message, statusCode: StatusCodes.UNAUTHORIZED, error });
   }
 }
@@ -93,7 +93,7 @@ export class NotFoundError extends ApiErrorResponse {
  * Conflict Error (409)
  */
 export class ConflictError extends ApiErrorResponse {
-  constructor(message = ReasonPhrases.CONFLICT, error?: ErrorDetail) {
+  constructor(message: ErrorResponse['message'] = ReasonPhrases.CONFLICT, error?: ErrorDetail) {
     super({ message, statusCode: StatusCodes.CONFLICT, error });
   }
 }

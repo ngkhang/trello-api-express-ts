@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-06
+ * Last Updated: 2026-03-07
  ------------------------------------------------- */
 
 import dotEnv from 'dotenv';
@@ -16,23 +16,36 @@ dotEnv.config({
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(NODE_ENVIRONMENT, `Must be one of: ${NODE_ENVIRONMENT.join(', ')}`),
-  APP_HOST: z.string('Must is required'),
+  APP_HOST: z.string().min(1, 'Host is required'),
   APP_PORT: z.coerce
-    .number('Must be a number')
-    .int('Must be an integer')
-    .min(1, 'Must be >= 1')
-    .max(65535, 'Must be <= 65535'),
+    .number('Port must be a valid number')
+    .int('Port must be an integer')
+    .min(1, 'Port must be between 1 and 65535')
+    .max(65535, 'Port must be between 1 and 65535'),
   APP_PREFIX: z
-    .string('Must is required')
-    .regex(/^[a-zA-Z0-9/-]+$/, 'Must only contain alphanumeric characters, hyphens, or slashes')
+    .string()
+    .min(1, 'Prefix is required')
+    .regex(
+      /^[a-zA-Z0-9/-]+$/,
+      'Prefix must only contain alphanumeric characters, hyphens, or slashes',
+    )
     .transform((val) => val.replace(/^\/+/, '')),
-  APP_CORS_ORIGIN: z.string('Must is required').transform((val) =>
-    val
-      .split(',')
-      .map((origin) => origin.trim())
-      .filter(Boolean),
-  ),
-  DB_MONGO_URI: z.string('Must is required'),
+  APP_CORS_ORIGIN: z
+    .string()
+    .min(1, 'CORS origin is required')
+    .transform((val) =>
+      val
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean),
+    ),
+  DB_MONGO_URI: z
+    .string()
+    .min(1, 'MongoDB URI is required')
+    .regex(
+      /^mongodb(\+srv)?:\/\/\w+:\w+@[a-zA-Z0-9\-./?=]+/,
+      'Must be a valid MongoDB connection string',
+    ),
 });
 
 const { success, data: validated, error } = EnvSchema.safeParse(process.env);
