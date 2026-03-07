@@ -18,6 +18,7 @@
 
 - **TypeScript** - Type safety
 - **Express.js** - Web framework
+- **MongoDB** (via MongoDB Atlas) - Database
 - **Zod** - Schema validation
 - **Helmet** - Security headers
 - **CORS** - Cross-origin resource sharing
@@ -134,6 +135,7 @@
 
 ## Prerequisites
 
+- A MongoDB Atlas cluster (or a local MongoDB instance)
 - Create `.env` file based on `.env.example` and modify variables with your value
 
   ```bash
@@ -144,6 +146,9 @@
   APP_PORT=3000
   APP_PREFIX='api'
   APP_CORS_ORIGIN='http:localhost:3000,https://frontend.example.com'
+
+  # ==== Database
+  DB_MONGO_URI="mongodb+srv://<USERNAME>:<PASSWORD>@example-cluster0.cbtkemk.mongodb.net/<DATABASE_NAME>?appName=<APP_NAME>"
   ```
 
 ### Installation
