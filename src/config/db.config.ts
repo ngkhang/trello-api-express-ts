@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-06
+ * Last Updated: 2026-03-09
  ------------------------------------------------- */
 
 import dns from 'dns/promises';
@@ -9,7 +9,7 @@ import type { Collection, Db } from 'mongodb';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
 import { envConfig } from '~/config/env.config';
-import type { BoardDocument } from '~/modules/boards/board.document';
+import type { BoardDocument } from '~/modules/boards/board.schema';
 import type { CardDocument } from '~/modules/cards/card.document';
 import type { ColumnDocument } from '~/modules/columns/column.document';
 

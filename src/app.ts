@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-03
+ * Last Updated: 2026-03-09
  ------------------------------------------------- */
 
 import cookieParser from 'cookie-parser';
@@ -14,6 +14,7 @@ import { envConfig } from '~/config/env.config';
 import { OkResponse } from '~/core/responses/api-success.response';
 import { errorEndpoint, errorHandler } from '~/middleware/error-handler.middleware';
 import { metadataMiddleware } from '~/middleware/metadata.middleware';
+import routes from '~/routes';
 
 export const createApp = (): Application => {
   const app = express();
@@ -30,6 +31,8 @@ export const createApp = (): Application => {
     const resBody = new OkResponse({ message: 'New res', data: null });
     res.status(resBody.statusCode).json(resBody);
   });
+
+  app.use(`/${envConfig.app.prefix}/v1`, routes);
 
   // Catch not found endpoint handler
   app.use('/{*splat}', errorEndpoint);
