@@ -1,10 +1,10 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-09
+ * Last Updated: 2026-03-10
  ------------------------------------------------- */
 
 import { ObjectId } from 'mongodb';
-import z from 'zod';
+import * as z from 'zod';
 
 import { ZodObjectId } from '~/utils/validate.util';
 
@@ -38,23 +38,32 @@ export const boardDTOSchema = z.object({
 
 // ==== Request Schemas ====
 export const boardRequestSchema = {
+  id: z.object({
+    params: boardDTOSchema.pick({ id: true }),
+  }),
   create: z.object({
-    body: z.object({}),
+    body: boardDTOSchema.pick({ title: true, description: true, type: true }).partial({
+      description: true,
+      type: true,
+    }),
   }),
   delete: z.object({
-    params: z.object({}),
+    params: boardDTOSchema.pick({ id: true }),
   }),
   update: z.object({
-    body: z.object({}),
-    params: z.object({}),
+    body: boardDTOSchema
+      .pick({ type: true, description: true, _destroy: true, columnOrderIds: true })
+      .partial(),
+    params: boardDTOSchema.pick({ id: true }),
   }),
 };
 
 // ==== Inferred Types ====
-// Controller layer
-export type BoardDTO = z.infer<typeof boardDTOSchema>;
-
-// Service layer
-export type Board = z.infer<typeof boardDTOSchema>;
-// Repo layer
 export type BoardDocument = z.infer<typeof boardSchema>;
+export type Board = z.infer<typeof boardDTOSchema>;
+export type CreateBoard = Pick<Board, 'title' | 'slug' | 'type' | 'description'>;
+export type UpdateBoard = Partial<Omit<Board, 'id' | 'title' | 'slug' | 'createdAt' | 'updatedAt'>>;
+export type BoardDTO = Board; // TODO: strips internal fields
+export type CreateBoardDTO = z.infer<typeof boardRequestSchema.create>['body'];
+export type UpdateBoardBodyDTO = z.infer<typeof boardRequestSchema.update>['body'];
+export type UpdateBoardParamsDTO = z.infer<typeof boardRequestSchema.update>['params'];

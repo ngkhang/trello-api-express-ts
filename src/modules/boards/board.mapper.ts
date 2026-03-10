@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-09
+ * Last Updated: 2026-03-10
  ------------------------------------------------- */
 
 import type { BoardDocument, Board } from '~/modules/boards/board.schema';
@@ -15,4 +15,6 @@ export class BoardMapper {
       columnOrderIds: columnOrderIds.map(objectToString),
     };
   }
+  // NOTE: implement toDTO method if needed
+  // public toDTO(domain: Board): BoardDTO { }
 }
