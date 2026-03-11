@@ -1,6 +1,6 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-07
+ * Last Updated: 2026-03-11
  ------------------------------------------------- */
 
 import { ReasonPhrases, StatusCodes } from 'http-status-codes';
@@ -95,5 +95,17 @@ export class NotFoundError extends ApiErrorResponse {
 export class ConflictError extends ApiErrorResponse {
   constructor(message: ErrorResponse['message'] = ReasonPhrases.CONFLICT, error?: ErrorDetail) {
     super({ message, statusCode: StatusCodes.CONFLICT, error });
+  }
+}
+
+/**
+ * Unprocessable Entity Error (422)
+ */
+export class UnprocessableEntityError extends ApiErrorResponse {
+  constructor(
+    message: ErrorResponse['message'] = ReasonPhrases.UNPROCESSABLE_ENTITY,
+    error?: ErrorDetail,
+  ) {
+    super({ message, statusCode: StatusCodes.UNPROCESSABLE_ENTITY, error });
   }
 }

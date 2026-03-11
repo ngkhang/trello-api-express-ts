@@ -1,17 +1,13 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-10
+ * Last Updated: 2026-03-11
  ------------------------------------------------- */
 
 import { ObjectId } from 'mongodb';
 import * as z from 'zod';
 
-import { ZodObjectId } from '~/utils/validate.util';
-
-export const BOARD_TYPE = {
-  PUBLIC: '001',
-  PRIVATE: '002',
-} as const;
+import { BOARD_TYPE } from '~/modules/boards/board.type';
+import { ZodEmptyObject, ZodObjectId } from '~/utils/validate.util';
 
 // Base Schema
 export const boardSchema = z.object({
@@ -39,31 +35,28 @@ export const boardDTOSchema = z.object({
 // ==== Request Schemas ====
 export const boardRequestSchema = {
   id: z.object({
+    body: ZodEmptyObject,
     params: boardDTOSchema.pick({ id: true }),
+    query: ZodEmptyObject,
   }),
   create: z.object({
     body: boardDTOSchema.pick({ title: true, description: true, type: true }).partial({
       description: true,
       type: true,
     }),
+    params: ZodEmptyObject,
+    query: ZodEmptyObject,
   }),
   delete: z.object({
+    body: ZodEmptyObject,
     params: boardDTOSchema.pick({ id: true }),
+    query: ZodEmptyObject,
   }),
   update: z.object({
     body: boardDTOSchema
       .pick({ type: true, description: true, _destroy: true, columnOrderIds: true })
       .partial(),
     params: boardDTOSchema.pick({ id: true }),
+    query: ZodEmptyObject,
   }),
 };
-
-// ==== Inferred Types ====
-export type BoardDocument = z.infer<typeof boardSchema>;
-export type Board = z.infer<typeof boardDTOSchema>;
-export type CreateBoard = Pick<Board, 'title' | 'slug' | 'type' | 'description'>;
-export type UpdateBoard = Partial<Omit<Board, 'id' | 'title' | 'slug' | 'createdAt' | 'updatedAt'>>;
-export type BoardDTO = Board; // TODO: strips internal fields
-export type CreateBoardDTO = z.infer<typeof boardRequestSchema.create>['body'];
-export type UpdateBoardBodyDTO = z.infer<typeof boardRequestSchema.update>['body'];
-export type UpdateBoardParamsDTO = z.infer<typeof boardRequestSchema.update>['params'];

@@ -1,88 +1,71 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-10
+ * Last Updated: 2026-03-11
  ------------------------------------------------- */
 
 import { ObjectId } from 'mongodb';
 
+import { COLLECTION_NAMES, collections } from '~/config/db.config';
+import type { BoardDocument, UpdateBoardDocument } from '~/modules/boards/board.document';
 import { BoardMapper } from '~/modules/boards/board.mapper';
-import type { BoardDocument, Board, CreateBoard, UpdateBoard } from '~/modules/boards/board.schema';
+import type { Board, CreateBoard, UpdateBoard } from '~/modules/boards/board.type';
 import { stringIdToObject } from '~/utils/converts.util';
-
-// In-memory store
-const boards: Map<string, BoardDocument> = new Map([
-  [
-    '69aa9d31386e1d9687f7b4cb',
-    {
-      _id: new ObjectId('69aa9d31386e1d9687f7b4cb'),
-      title: 'Board 1',
-      slug: 'board-1',
-      type: '001',
-      description: '',
-      _destroy: false,
-      createdAt: new Date(),
-      updatedAt: null,
-      columnOrderIds: [],
-    },
-  ],
-]);
 
 export class BoardRepository {
   private readonly boardMapper = new BoardMapper();
+  private readonly boardCollection = collections[COLLECTION_NAMES.BOARDS];
 
   public async findMany(): Promise<Board[]> {
-    const results = Array.from(boards.values());
+    const boards = await this.boardCollection().find().toArray();
     // TODO: Implement query params to filter
 
-    return results.map(this.boardMapper.toDomain);
+    return boards.map(this.boardMapper.toDomain);
   }
 
   public async findById(id: Board['id']): Promise<Board | null> {
-    const boardDoc = boards.get(id);
+    const boardDoc = await this.boardCollection().findOne({ _id: stringIdToObject(id) });
     return boardDoc ? this.boardMapper.toDomain(boardDoc) : null;
   }
 
-  public async create(data: CreateBoard): Promise<Board> {
-    const _id = new ObjectId();
+  public async create(data: CreateBoard): Promise<Board | null> {
     const newBoard: BoardDocument = {
       ...data,
-      _id,
-      createdAt: new Date(),
-      updatedAt: null,
+      _id: new ObjectId(),
       columnOrderIds: [],
       _destroy: false,
+      createdAt: new Date(),
+      updatedAt: null,
     };
 
-    boards.set(_id.toString(), newBoard);
-    return this.boardMapper.toDomain(newBoard);
+    const { acknowledged } = await this.boardCollection().insertOne(newBoard);
+
+    return acknowledged ? this.boardMapper.toDomain(newBoard) : null;
   }
 
   public async update(id: Board['id'], data: UpdateBoard): Promise<Board | null> {
-    const existing = boards.get(id);
-
-    if (!existing) return null;
-
-    const updated: BoardDocument = {
-      ...existing,
+    // TODO: Add title, slug properties for update
+    const updateBoard: UpdateBoardDocument = {
       ...data,
-      columnOrderIds: data.columnOrderIds
-        ? data.columnOrderIds.map(stringIdToObject)
-        : existing.columnOrderIds,
+      columnOrderIds: data.columnOrderIds && data.columnOrderIds.map(stringIdToObject),
       updatedAt: new Date(),
     };
-
-    boards.set(id, updated);
-    return this.boardMapper.toDomain(updated);
+    const boardUpdated = await this.boardCollection().findOneAndUpdate(
+      { _id: stringIdToObject(id) },
+      { $set: updateBoard },
+      { returnDocument: 'after' },
+    );
+    return boardUpdated ? this.boardMapper.toDomain(boardUpdated) : null;
   }
 
   public async delete(id: Board['id']): Promise<boolean> {
-    return boards.delete(id);
+    const result = await this.boardCollection().deleteOne({ _id: stringIdToObject(id) });
+
+    return result.acknowledged;
   }
 
-  public async existByTitle(title: Board['title']): Promise<boolean> {
-    for (const board of boards.values()) {
-      if (board.title === title) return true;
-    }
-    return false;
+  public async existByTitle(title: Board['title']): Promise<Board | null> {
+    const boardExistDoc = await this.boardCollection().findOne({ title });
+
+    return boardExistDoc ? this.boardMapper.toDomain(boardExistDoc) : null;
   }
 }

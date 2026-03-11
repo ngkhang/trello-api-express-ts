@@ -1,9 +1,10 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-10
+ * Last Updated: 2026-03-11
  ------------------------------------------------- */
 
-import type { BoardDocument, Board } from '~/modules/boards/board.schema';
+import type { BoardDocument } from '~/modules/boards/board.document';
+import type { Board } from '~/modules/boards/board.type';
 import { objectToString } from '~/utils/converts.util';
 
 export class BoardMapper {

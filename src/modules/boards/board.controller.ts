@@ -1,43 +1,38 @@
 /* --------------------------------------------------
  * Author: Khang Nguyen - https://github.com/ngkhang
- * Last Updated: 2026-03-10
+ * Last Updated: 2026-03-11
  ------------------------------------------------- */
 
 import type { Request, Response, NextFunction } from 'express';
 
 import { CreatedResponse, OkResponse } from '~/core/responses/api-success.response';
+import { BoardService } from '~/modules/boards/board.service';
 import type {
   BoardDTO,
+  BoardResponseDTO,
+  BoardsResponseDTO,
   CreateBoardDTO,
+  DeleteBoardParamDTO,
   UpdateBoardBodyDTO,
-  UpdateBoardParamsDTO,
-} from '~/modules/boards/board.schema';
-import { BoardService } from '~/modules/boards/board.service';
+  UpdateBoardParamDTO,
+} from '~/modules/boards/board.type';
 
 export class BoardController {
   private readonly boardService = new BoardService();
 
   public list = async (
     _req: Request,
-    res: Response<OkResponse<{ items: BoardDTO[]; pagination: { total: number } }>>,
+    res: Response<OkResponse<BoardsResponseDTO>>,
     _next: NextFunction,
   ): Promise<void> => {
     const result = await this.boardService.list();
-
-    const resBody = new OkResponse({
-      data: {
-        items: result.items,
-        pagination: {
-          total: result.total,
-        },
-      },
-    });
+    const resBody = new OkResponse({ data: result });
     res.status(resBody.statusCode).json(resBody);
   };
 
   public getById = async (
-    req: Request<{ id: BoardDTO['id'] }, object, object>,
-    res: Response<OkResponse<BoardDTO>>,
+    req: Request<{ id: BoardDTO['id'] }, unknown, unknown>,
+    res: Response<OkResponse<BoardResponseDTO>>,
     _next: NextFunction,
   ): Promise<void> => {
     const board = await this.boardService.getById(req.params.id);
@@ -47,12 +42,11 @@ export class BoardController {
   };
 
   public create = async (
-    req: Request<object, object, CreateBoardDTO>,
-    res: Response<CreatedResponse<BoardDTO>>,
+    req: Request<unknown, unknown, CreateBoardDTO>,
+    res: Response<CreatedResponse<BoardResponseDTO>>,
     _next: NextFunction,
   ): Promise<void> => {
-    const input = req.body;
-    const createdBoard = await this.boardService.create(input);
+    const createdBoard = await this.boardService.create(req.body);
 
     const resBody = new CreatedResponse({
       data: createdBoard,
@@ -62,23 +56,23 @@ export class BoardController {
   };
 
   public update = async (
-    req: Request<UpdateBoardParamsDTO, object, UpdateBoardBodyDTO>,
-    res: Response<OkResponse<BoardDTO>>,
+    req: Request<UpdateBoardParamDTO, unknown, UpdateBoardBodyDTO>,
+    res: Response<OkResponse<BoardResponseDTO>>,
     _next: NextFunction,
   ): Promise<void> => {
-    const updated = await this.boardService.update(req.params.id, req.body);
-    const resBody = new OkResponse({ data: updated, message: 'Board updated successfully' });
+    const updatedBoard = await this.boardService.update(req.params.id, req.body);
+    const resBody = new OkResponse({ data: updatedBoard, message: 'Board updated successfully' });
     res.status(resBody.statusCode).json(resBody);
   };
 
   public delete = async (
-    req: Request<UpdateBoardParamsDTO>,
-    res: Response,
+    req: Request<DeleteBoardParamDTO>,
+    res: Response<OkResponse<null>>,
     _next: NextFunction,
   ): Promise<void> => {
     await this.boardService.delete(req.params.id);
 
-    const resBody = new OkResponse<null>({ data: null, message: 'Board deleted successfully' });
+    const resBody = new OkResponse({ data: null, message: 'Board deleted successfully' });
     res.status(resBody.statusCode).json(resBody);
   };
 }
