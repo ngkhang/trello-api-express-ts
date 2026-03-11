@@ -8,6 +8,7 @@ import { BoardRepository } from '~/modules/boards/board.repository';
 import { BOARD_TYPE } from '~/modules/boards/board.type';
 import type {
   Board,
+  UpdateBoard,
   BoardResponseDTO,
   BoardsResponseDTO,
   CreateBoardDTO,
@@ -20,7 +21,7 @@ import { slugify } from '~/utils/converts.util';
 export class BoardService {
   private readonly boardRepo = new BoardRepository();
 
-  public async list(): Promise<BoardsResponseDTO> {
+  public async getAll(): Promise<BoardsResponseDTO> {
     const boards = await this.boardRepo.findMany();
 
     // TODO: Reformat pagination
@@ -40,9 +41,9 @@ export class BoardService {
   }
 
   public async create(data: CreateBoardDTO): Promise<BoardResponseDTO> {
-    const existBoard = await this.boardRepo.existByTitle(data.title);
+    const existBoard = await this.boardRepo.isTitleTaken(data.title);
 
-    if (existBoard) throw new ConflictError(`Board with title  '${data.title}' already exists`);
+    if (existBoard) throw new ConflictError('A board with this title already exists');
 
     const newBoardCreated = await this.boardRepo.create({
       title: data.title,
@@ -51,7 +52,7 @@ export class BoardService {
       description: data.description || '',
     });
 
-    if (!newBoardCreated) throw new BadRequestError('Failed to retrieve created board');
+    if (!newBoardCreated) throw new BadRequestError('Board creation failed');
     return newBoardCreated;
   }
 
@@ -61,18 +62,35 @@ export class BoardService {
   ): Promise<BoardResponseDTO> {
     const existBoard = await this.getById(id);
 
-    if (!existBoard) throw new NotFoundError(`Board with id '${id}' not found`);
+    const { title, columnOrderIds, ...rest } = data;
+    const newBoardUpdate: UpdateBoard = {
+      title: existBoard.title,
+      slug: existBoard.slug,
+      description: existBoard.description,
+      type: existBoard.type,
+      columnOrderIds: columnOrderIds
+        ? [...new Set([...existBoard.columnOrderIds, ...columnOrderIds])]
+        : existBoard.columnOrderIds,
+      ...rest,
+    };
 
-    // TODO: Check title and slug to update it
-    const updated = await this.boardRepo.update(id, data);
+    if (title) {
+      const existTitle = await this.boardRepo.isTitleTaken(title);
+      if (existTitle) throw new ConflictError('A board with this title already exists');
 
-    if (!updated) throw new BadRequestError(`Can't update board data with ID: ${id}`);
+      newBoardUpdate.title = title;
+      newBoardUpdate.slug = slugify(title);
+    }
+
+    const updated = await this.boardRepo.update(id, newBoardUpdate);
+
+    if (!updated) throw new BadRequestError(`Board update failed for ID: ${id}`);
     return updated;
   }
 
   public async delete(id: DeleteBoardParamDTO['id']): Promise<void> {
     await this.getById(id);
     const isDelete = await this.boardRepo.delete(id);
-    if (!isDelete) throw new BadRequestError('Failed to deleted board');
+    if (!isDelete) throw new BadRequestError('Board deletion failed');
   }
 }

@@ -34,7 +34,7 @@ export const boardDTOSchema = z.object({
 
 // ==== Request Schemas ====
 export const boardRequestSchema = {
-  id: z.object({
+  getById: z.object({
     body: ZodEmptyObject,
     params: boardDTOSchema.pick({ id: true }),
     query: ZodEmptyObject,
@@ -54,7 +54,7 @@ export const boardRequestSchema = {
   }),
   update: z.object({
     body: boardDTOSchema
-      .pick({ type: true, description: true, _destroy: true, columnOrderIds: true })
+      .pick({ title: true, type: true, description: true, columnOrderIds: true })
       .partial(),
     params: boardDTOSchema.pick({ id: true }),
     query: ZodEmptyObject,

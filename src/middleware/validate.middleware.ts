@@ -4,7 +4,7 @@
  ------------------------------------------------- */
 
 import type { Request, Response, NextFunction } from 'express';
-import type { ZodObject, ZodError } from 'zod';
+import type { ZodError, ZodType } from 'zod';
 
 import { UnprocessableEntityError } from '~/core/responses/api-error.response';
 
@@ -20,7 +20,7 @@ const formatErrorsDetail = (errors: ZodError): Record<string, string[]> => {
   return details;
 };
 
-export const validateRequest = (schema: ZodObject) => {
+export const validateRequest = (schema: ZodType) => {
   return (req: Request, _res: Response, next: NextFunction): void => {
     const result = schema.safeParse({
       body: req.body,
@@ -35,7 +35,6 @@ export const validateRequest = (schema: ZodObject) => {
       // TODO: Add error details and update error detail types
       throw new UnprocessableEntityError('Validation failed', { code: 'ERR_INVALID' });
     }
-
     next();
   };
 };

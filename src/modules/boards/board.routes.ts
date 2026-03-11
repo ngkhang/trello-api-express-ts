@@ -13,8 +13,8 @@ import { boardRequestSchema } from '~/modules/boards/board.schema';
 const controller = new BoardController();
 const router = Router();
 
-router.get('/', controller.list);
-router.get('/:id', validateRequest(boardRequestSchema.id), asyncHandler(controller.getById));
+router.get('/', asyncHandler(controller.getAll));
+router.get('/:id', validateRequest(boardRequestSchema.getById), asyncHandler(controller.getById));
 router.post('/', validateRequest(boardRequestSchema.create), asyncHandler(controller.create));
 router.delete('/:id', validateRequest(boardRequestSchema.delete), asyncHandler(controller.delete));
 router.put('/:id', validateRequest(boardRequestSchema.update), asyncHandler(controller.update));

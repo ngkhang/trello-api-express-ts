@@ -20,12 +20,12 @@ import type {
 export class BoardController {
   private readonly boardService = new BoardService();
 
-  public list = async (
+  public getAll = async (
     _req: Request,
     res: Response<OkResponse<BoardsResponseDTO>>,
     _next: NextFunction,
   ): Promise<void> => {
-    const result = await this.boardService.list();
+    const result = await this.boardService.getAll();
     const resBody = new OkResponse({ data: result });
     res.status(resBody.statusCode).json(resBody);
   };
@@ -50,7 +50,7 @@ export class BoardController {
 
     const resBody = new CreatedResponse({
       data: createdBoard,
-      message: 'Created a new board successfully',
+      message: 'Board created successfully',
     });
     res.status(resBody.statusCode).json(resBody);
   };

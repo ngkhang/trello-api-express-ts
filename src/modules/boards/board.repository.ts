@@ -43,7 +43,6 @@ export class BoardRepository {
   }
 
   public async update(id: Board['id'], data: UpdateBoard): Promise<Board | null> {
-    // TODO: Add title, slug properties for update
     const updateBoard: UpdateBoardDocument = {
       ...data,
       columnOrderIds: data.columnOrderIds && data.columnOrderIds.map(stringIdToObject),
@@ -57,15 +56,15 @@ export class BoardRepository {
     return boardUpdated ? this.boardMapper.toDomain(boardUpdated) : null;
   }
 
+  // TODO: Implement soft-delete method
   public async delete(id: Board['id']): Promise<boolean> {
-    const result = await this.boardCollection().deleteOne({ _id: stringIdToObject(id) });
+    const { deletedCount } = await this.boardCollection().deleteOne({ _id: stringIdToObject(id) });
 
-    return result.acknowledged;
+    return deletedCount > 0;
   }
 
-  public async existByTitle(title: Board['title']): Promise<Board | null> {
-    const boardExistDoc = await this.boardCollection().findOne({ title });
-
-    return boardExistDoc ? this.boardMapper.toDomain(boardExistDoc) : null;
+  public async isTitleTaken(title: Board['title']): Promise<boolean> {
+    const count = await this.boardCollection().countDocuments({ title });
+    return count > 0;
   }
 }

@@ -8,6 +8,4 @@ import type * as z from 'zod';
 import type { boardSchema } from '~/modules/boards/board.schema';
 
 export type BoardDocument = z.infer<typeof boardSchema>;
-export type UpdateBoardDocument = Partial<
-  Omit<BoardDocument, '_id' | 'title' | 'slug' | 'createdAt'>
->;
+export type UpdateBoardDocument = Partial<Omit<BoardDocument, '_id' | 'createdAt' | '_destroy'>>;
